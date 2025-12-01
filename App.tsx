@@ -1,109 +1,65 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pagesData } from './data';
-import PageRenderer from './components/PageRenderer';
+import ScrollablePageRenderer from './components/ScrollablePageRenderer';
 import Button from './components/ui/Button';
 import TableOfContents from './components/TableOfContents';
 
 const App: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0); // 1 for right (next), -1 for left (prev)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollableRef = useRef<HTMLDivElement>(null);
 
-  // Keyboard Navigation & Scroll Navigation
+  // Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isMenuOpen) return;
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        nextPage();
-      } else if (e.key === 'ArrowLeft') {
-        prevPage();
+      if (e.key === 'ArrowDown' || e.key === ' ') {
+        goToPage(currentIndex + 1);
+      } else if (e.key === 'ArrowUp') {
+        goToPage(currentIndex - 1);
       } else if (e.key === 'Escape') {
         setIsMenuOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, isMenuOpen, isTransitioning]);
+  }, [currentIndex, isMenuOpen]);
 
-  // Scroll Navigation
+  // Scroll within page to show back-to-top button
   useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout;
-    const handleScroll = (e: WheelEvent) => {
-      if (isMenuOpen || isTransitioning) return;
-      
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        if (e.deltaY > 0) {
-          nextPage(); // Scroll down = next page
-        } else if (e.deltaY < 0) {
-          prevPage(); // Scroll up = previous page
-        }
-      }, 100);
+    const handlePageScroll = () => {
+      if (scrollableRef.current) {
+        setShowBackToTop(scrollableRef.current.scrollTop > 300);
+      }
     };
     
-    window.addEventListener('wheel', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('wheel', handleScroll);
-      clearTimeout(scrollTimeout);
-    };
-  }, [currentIndex, isMenuOpen, isTransitioning]);
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement) {
+      scrollableElement.addEventListener('scroll', handlePageScroll);
+      return () => scrollableElement.removeEventListener('scroll', handlePageScroll);
+    }
+  }, []);
 
-  const paginate = (newDirection: number) => {
-    if (isTransitioning) return; // Prevent rapid clicking disrupting the 3D animation
-    const newIndex = currentIndex + newDirection;
-    if (newIndex >= 0 && newIndex < pagesData.length) {
-      setIsTransitioning(true);
-      setDirection(newDirection);
-      setCurrentIndex(newIndex);
+  const goToPage = (index: number) => {
+    if (index >= 0 && index < pagesData.length) {
+      setCurrentIndex(index);
+      // Scroll to top of new page
+      if (scrollableRef.current) {
+        scrollableRef.current.scrollTop = 0;
+      }
     }
   };
 
-  const nextPage = () => paginate(1);
-  const prevPage = () => paginate(-1);
-  
-  const goToPage = (index: number) => {
-    if (index === currentIndex || isTransitioning) return;
-    setIsTransitioning(true);
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-  };
-  
-  // 3D Flip Variants
-  // Mimics a book page turning hinged on the left spine
-  const flipVariants = {
-    enter: (direction: number) => ({
-      rotateY: direction > 0 ? 0 : -180, // If Next: enter flat (behind). If Prev: enter flipped (from left).
-      x: 0,
-      opacity: 1,
-      zIndex: direction > 0 ? 0 : 50, // Prev page comes on top
-      scale: direction > 0 ? 0.95 : 1, // Slight depth effect for page behind
-      transformOrigin: "left center",
-      filter: direction > 0 ? "brightness(0.5)" : "brightness(1)", // Shadow effect
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
-    }),
-    center: {
-      rotateY: 0,
-      x: 0,
-      zIndex: 10,
-      opacity: 1,
-      scale: 1,
-      transformOrigin: "left center",
-      filter: "brightness(1)",
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
-    },
-    exit: (direction: number) => ({
-      rotateY: direction > 0 ? -180 : 0, // Exit to left (-180) or stay behind (0)
-      x: 0,
-      opacity: 1,
-      zIndex: direction > 0 ? 50 : 0, // Old page stays on top if going Next
-      scale: direction > 0 ? 1 : 0.95, // Page moving to back scales down
-      transformOrigin: "left center",
-      filter: direction > 0 ? "brightness(1)" : "brightness(0.5)", // Shadow effect
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
-    })
+  const nextPage = () => goToPage(currentIndex + 1);
+  const prevPage = () => goToPage(currentIndex - 1);
+
+  const scrollToTop = () => {
+    if (scrollableRef.current) {
+      scrollableRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const progress = ((currentIndex + 1) / pagesData.length) * 100;
@@ -112,53 +68,16 @@ const App: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 overflow-hidden bg-neutral-900 font-sans select-none" 
+      className="fixed inset-0 overflow-hidden bg-neutral-900 font-sans" 
       ref={containerRef}
-      style={{ perspective: '1500px' }} // Deep perspective for realistic 3D
     >
-      {/* --- Viewport --- */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <AnimatePresence initial={false} custom={direction}>
-          <motion.div
-            key={currentIndex}
-            custom={direction}
-            variants={flipVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            onAnimationComplete={() => setIsTransitioning(false)}
-            drag="x"
-            dragElastic={0.2}
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={(e, info) => {
-              const swipeThreshold = 50;
-              if (info.offset.x < -swipeThreshold) {
-                nextPage();
-              } else if (info.offset.x > swipeThreshold) {
-                prevPage();
-              }
-            }}
-            className="absolute inset-0 w-full h-full shadow-2xl cursor-grab active:cursor-grabbing"
-            style={{ 
-              backfaceVisibility: 'hidden', // Hides the page when flipped > 90deg
-              backgroundColor: isDark ? '#000' : '#FFF' // Ensures opaque background
-            }}
-          >
-            <PageRenderer page={currentPageData} isActive={true} />
-            
-            {/* Spine Shadow Gradient */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/20 to-transparent pointer-events-none z-20" />
-            
-            {/* Animated Shadow Overlay for depth during flip */}
-            <motion.div 
-               className="absolute inset-0 bg-black pointer-events-none z-30"
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 0 }}
-               exit={{ opacity: direction > 0 ? 0.3 : 0 }} // Darken slightly as it flips away
-               transition={{ duration: 0.8 }}
-            />
-          </motion.div>
-        </AnimatePresence>
+      {/* --- Main Scrollable Viewport --- */}
+      <div 
+        ref={scrollableRef}
+        className="absolute inset-0 overflow-y-auto overflow-x-hidden scroll-smooth"
+      >
+        {/* Page Content */}
+        <ScrollablePageRenderer page={currentPageData} isActive={true} />
       </div>
 
       {/* --- UI Overlays --- */}
@@ -186,7 +105,7 @@ const App: React.FC = () => {
         <Button 
           direction="left" 
           onClick={prevPage} 
-          disabled={currentIndex === 0 || isTransitioning}
+          disabled={currentIndex === 0}
           isDark={isDark}
           className={`${currentIndex === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
         />
@@ -194,7 +113,7 @@ const App: React.FC = () => {
         <Button 
           direction="right" 
           onClick={nextPage} 
-          disabled={currentIndex === pagesData.length - 1 || isTransitioning}
+          disabled={currentIndex === pagesData.length - 1}
           isDark={isDark}
           className={`${currentIndex === pagesData.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
         />
@@ -209,28 +128,28 @@ const App: React.FC = () => {
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
       </div>
-      
-      {/* 5. Subtle Loading Indicator during Transition */}
+
+      {/* 5. Back to Top Button (Bottom Right) */}
       <AnimatePresence>
-        {isTransitioning && (
-          <motion.div 
-            className="fixed top-0 left-0 w-full h-[2px] z-[60] overflow-hidden bg-transparent pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        {showBackToTop && (
+          <motion.button
+            onClick={scrollToTop}
+            className={`fixed bottom-10 right-8 z-40 w-12 h-12 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm border ${isDark ? 'border-white/30 bg-black/20 hover:border-gold text-white' : 'border-black/10 bg-white/40 hover:border-gold text-black'}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <motion.div 
-               className="h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]"
-               initial={{ x: '-100%', width: '50%' }}
-               animate={{ x: '100%', width: '50%' }}
-               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            />
-          </motion.div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+          </motion.button>
         )}
       </AnimatePresence>
 
-      {/* 6. Brand Watermark (Rotated Left) */}
-      <div className={`hidden lg:block fixed bottom-8 left-8 z-40 font-serif italic text-sm pointer-events-none transition-colors duration-500 ${isDark ? 'text-white/20' : 'text-black/20'}`}>
+      {/* 6. Brand Watermark (Bottom Left) */}
+      <div className={`fixed bottom-8 left-8 z-40 font-serif italic text-sm pointer-events-none transition-colors duration-500 ${isDark ? 'text-white/20' : 'text-black/20'}`}>
         Icons of Influence
       </div>
 
@@ -242,7 +161,6 @@ const App: React.FC = () => {
         onSelectPage={goToPage}
         currentIndex={currentIndex}
       />
-
     </div>
   );
 };

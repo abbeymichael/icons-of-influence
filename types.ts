@@ -7,6 +7,13 @@ export type PageType =
   | 'layout-text'
   | 'image-reveal';
 
+export type ContentBlock = 
+  | { type: 'text'; content: string; size?: 'sm' | 'md' | 'lg' }
+  | { type: 'image'; src: string; caption?: string; width?: 'narrow' | 'wide' | 'full' }
+  | { type: 'video'; src: string; caption?: string }
+  | { type: 'divider' }
+  | { type: 'quote'; content: string; author?: string };
+
 export interface PageData {
   type: PageType;
   surface: 'white' | 'black';
@@ -19,4 +26,5 @@ export interface PageData {
   grid?: string[];
   imageSide?: 'left' | 'right'; // For split layouts
   layoutImages?: string[]; // Additional images for collages
+  content?: ContentBlock[]; // New: scrollable page content
 }
