@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Keyboard Navigation
+  // Keyboard Navigation & Scroll Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isMenuOpen) return;
@@ -26,6 +26,29 @@ const App: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, isMenuOpen, isTransitioning]);
+
+  // Scroll Navigation
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+    const handleScroll = (e: WheelEvent) => {
+      if (isMenuOpen || isTransitioning) return;
+      
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (e.deltaY > 0) {
+          nextPage(); // Scroll down = next page
+        } else if (e.deltaY < 0) {
+          prevPage(); // Scroll up = previous page
+        }
+      }, 100);
+    };
+    
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('wheel', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
   }, [currentIndex, isMenuOpen, isTransitioning]);
 
   const paginate = (newDirection: number) => {

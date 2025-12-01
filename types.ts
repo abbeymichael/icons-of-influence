@@ -4,7 +4,8 @@ export type PageType =
   | 'hero' 
   | 'grid' 
   | 'layout-photo'
-  | 'layout-text';
+  | 'layout-text'
+  | 'image-reveal';
 
 export interface PageData {
   type: PageType;

@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from 'react';
+import { useState } from 'react';
 import { PageData } from '../types';
 import { motion } from 'framer-motion';
 
@@ -46,6 +47,7 @@ export const ContentWrapper: FC<ContentWrapperProps> = ({ children, className = 
 };
 
 const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
+  const [isRevealed, setIsRevealed] = useState(false);
   const isDark = page.surface === 'black';
   const textColor = isDark ? 'text-white' : 'text-ink';
   const bgColor = isDark ? 'bg-neutral-950' : 'bg-paper';
@@ -177,6 +179,85 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
               {page.subtitle && <p className="font-sans text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase font-medium">{page.subtitle}</p>}
             </motion.div>
          </ContentWrapper>
+      </section>
+    );
+  }
+
+  // 5. IMAGE REVEAL (image only with plus button overlay)
+  if (page.type === 'image-reveal') {
+    return (
+      <section className={`relative w-full h-full overflow-hidden flex items-center justify-center ${bgColor} ${textColor}`}>
+        {page.bg && (
+          <>
+            {/* Full-screen image background */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url('${page.bg}')` }}
+            />
+            
+            {/* Overlay that fades to reveal content */}
+            <motion.div
+              className="absolute inset-0 bg-black/30"
+              animate={{ opacity: isRevealed ? 0 : 0.4 }}
+              transition={{ duration: 0.6 }}
+            />
+            
+            {/* Plus button to reveal content */}
+            {!isRevealed && (
+              <motion.button
+                onClick={() => setIsRevealed(true)}
+                className="relative z-20 flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 transition-all"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </motion.button>
+            )}
+          </>
+        )}
+        
+        {/* Content panel that slides up on reveal */}
+        <motion.div
+          className="relative z-10 w-full h-full flex items-end overflow-hidden"
+          animate={{ y: isRevealed ? 0 : '100%' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <ContentWrapper isActive={isActive && isRevealed} className="!justify-end !mx-0 !px-0 max-w-4xl w-full" width="wide">
+            <motion.div 
+              className="border-t border-current/20 bg-black/70 backdrop-blur-md p-6 sm:p-8 md:p-12 w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              {page.title && <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 leading-tight">{page.title}</h2>}
+              {page.subtitle && <div className="w-12 sm:w-14 md:w-16 h-1 bg-gold mb-4 sm:mb-5"></div>}
+              {page.subtitle && <p className="font-sans text-xs sm:text-sm md:text-base tracking-[0.1em] sm:tracking-[0.15em] uppercase font-medium opacity-90 mb-4">{page.subtitle}</p>}
+              {page.body && <p className="font-sans text-sm sm:text-base leading-relaxed opacity-80 max-w-2xl">{page.body}</p>}
+            </motion.div>
+          </ContentWrapper>
+        </motion.div>
+        
+        {/* Close button when revealed */}
+        {isRevealed && (
+          <motion.button
+            onClick={() => setIsRevealed(false)}
+            className="absolute top-6 right-6 z-30 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </motion.button>
+        )}
       </section>
     );
   }
