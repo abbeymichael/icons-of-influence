@@ -186,22 +186,22 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
     <section className={`relative w-full h-full flex items-center justify-center overflow-hidden ${bgColor} ${textColor}`}>
       <ContentWrapper isActive={isActive} width="wide">
           {page.masthead && (
-            <motion.div variants={itemVariants} className="w-full flex justify-center mb-8">
-               <div className="font-sans text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-gold border-b border-gold pb-2">
+            <motion.div variants={itemVariants} className="w-full flex justify-center mb-6 sm:mb-8">
+               <div className="font-sans text-[10px] sm:text-xs md:text-sm font-bold tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] uppercase text-gold border-b border-gold pb-2">
                  {page.masthead}
                </div>
             </motion.div>
           )}
           
-          <div className="flex flex-col items-center text-center mb-10 md:mb-14">
+          <div className="flex flex-col items-center text-center mb-6 sm:mb-10 md:mb-14">
             {page.title && (
-              <motion.h2 variants={itemVariants} className="font-serif text-5xl md:text-8xl mb-6 leading-none">
+              <motion.h2 variants={itemVariants} className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-8xl mb-4 sm:mb-6 leading-tight break-words">
                 {page.title}
               </motion.h2>
             )}
 
             {page.subtitle && (
-              <motion.div variants={itemVariants} className="font-serif text-xl md:text-2xl italic opacity-80 max-w-2xl">
+              <motion.div variants={itemVariants} className="font-serif text-base sm:text-lg md:text-xl lg:text-2xl italic opacity-80 max-w-2xl px-2">
                 {page.subtitle}
               </motion.div>
             )}
@@ -213,11 +213,11 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
           </motion.div>
 
           {page.pull && (
-            <motion.div variants={itemVariants} className="w-full mt-16 text-center">
-               <span className="font-serif text-3xl md:text-5xl italic text-gold leading-tight relative inline-block px-12">
-                 <span className="absolute top-0 left-0 text-6xl opacity-30">“</span>
+            <motion.div variants={itemVariants} className="w-full mt-10 sm:mt-16 text-center">
+               <span className="font-serif text-xl sm:text-2xl md:text-4xl lg:text-5xl italic text-gold leading-tight relative inline-block px-4 sm:px-8 md:px-12">
+                 <span className="absolute top-0 left-0 text-4xl sm:text-5xl md:text-6xl opacity-30 leading-none">"</span>
                  {page.pull}
-                 <span className="absolute bottom-0 right-0 text-6xl opacity-30">”</span>
+                 <span className="absolute bottom-0 right-0 text-4xl sm:text-5xl md:text-6xl opacity-30 leading-none">"</span>
                </span>
             </motion.div>
           )}
