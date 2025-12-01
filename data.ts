@@ -2,7 +2,7 @@ import { PageData } from './types';
 
 export const pagesData: PageData[] = [
   /* 1 COVER */
-  { type:"cover", surface:"white", masthead:"ICONS OF INFLUENCE", title:"NITA SHILIMKAR", subtitle:"THE ELEGANCE OF DISCIPLINE", body:"STYLE · WELLNESS · GLOBAL INFLUENCE", bg:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1600&q=80" },
+  { type:"cover", surface:"white", masthead:"ICONS OF INFLUENCE", title:"NITA SHILIMKAR", subtitle:"THE ELEGANCE OF DISCIPLINE", body:"STYLE · WELLNESS · GLOBAL INFLUENCE", bg:"" },
 
   /* 2 INSIDE COVER */
   { type:"article", surface:"black", title:"ISSUE ONE", subtitle:"THE LIFESTYLE EDITION", body:"Matte black minimalist inside cover with vertical gold line and ISSUE ONE footer." },
