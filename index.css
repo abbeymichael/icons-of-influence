@@ -1,0 +1,36 @@
+/* Minimal site CSS — keeps Tailwind CDN usage simple and prevents 404s
+   This file is intentionally small; Tailwind utilities are provided by the CDN
+   (or you can replace with a local Tailwind build later).
+*/
+
+:root {
+  --bg-paper: #ffffff;
+  --ink: #000000;
+  --gold: #D4AF37;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background-color: var(--bg-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Small helpers used by components */
+.text-ink { color: var(--ink); }
+.bg-paper { background: var(--bg-paper); }
+.bg-gold { background: var(--gold); }
+
+/* Hide focus outline only when using mouse — keep for keyboard accessibility */
+:focus:not(:focus-visible) { outline: none; }
+
+/* Ensure motion elements have preserved 3D space */
+* { box-sizing: border-box; }
+
+/* A sensible default for images */
+img { max-width: 100%; height: auto; display: block; }
