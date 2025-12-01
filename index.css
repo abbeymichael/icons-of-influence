@@ -9,16 +9,28 @@
   --gold: #D4AF37;
 }
 
-html, body, #root {
+html {
   height: 100%;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
   font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   background-color: var(--bg-paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
 }
 
 /* Small helpers used by components */
@@ -34,3 +46,17 @@ body {
 
 /* A sensible default for images */
 img { max-width: 100%; height: auto; display: block; }
+
+/* Mobile optimization: prevent unwanted text reflow and ensure proper word-wrapping */
+h1, h2, h3, h4, h5, h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* Prevent double-tap zoom on touch devices */
+button, a, input {
+  touch-action: manipulation;
+}
+

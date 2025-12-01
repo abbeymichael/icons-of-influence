@@ -31,7 +31,7 @@ interface ContentWrapperProps {
 }
 
 export const ContentWrapper: FC<ContentWrapperProps> = ({ children, className = "", isActive, width = 'standard' }) => {
-  const maxWidthClass = width === 'full' ? 'max-w-none px-0' : width === 'wide' ? 'max-w-6xl px-6 md:px-12' : 'max-w-4xl px-8 md:px-16';
+  const maxWidthClass = width === 'full' ? 'max-w-none px-4 sm:px-6 md:px-0' : width === 'wide' ? 'max-w-6xl px-4 sm:px-6 md:px-12' : 'max-w-4xl px-4 sm:px-6 md:px-8 lg:px-16';
   
   return (
     <motion.div 
@@ -104,29 +104,29 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
         <Background />
         <ContentWrapper isActive={isActive} className="items-center text-center">
           {page.masthead && (
-            <motion.div variants={itemVariants} className="font-serif text-xs md:text-sm tracking-[0.4em] uppercase text-gold mb-8 md:mb-12 border-b border-gold/40 pb-2">
+            <motion.div variants={itemVariants} className="font-serif text-xs sm:text-sm md:text-base tracking-[0.3em] sm:tracking-[0.4em] uppercase text-gold mb-4 sm:mb-8 md:mb-12 border-b border-gold/40 pb-2">
               {page.masthead}
             </motion.div>
           )}
           
-          <motion.h1 variants={itemVariants} className="font-serif text-6xl md:text-8xl lg:text-9xl leading-[0.85] mb-8 md:mb-10 tracking-tight">
+          <motion.h1 variants={itemVariants} className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl leading-tight sm:leading-[0.95] md:leading-[0.85] mb-4 sm:mb-6 md:mb-8 lg:mb-10 tracking-tight break-words">
             {page.title}
           </motion.h1>
 
           {page.subtitle && (
-            <motion.div variants={itemVariants} className="font-sans font-light text-lg md:text-3xl italic tracking-wide opacity-90 max-w-3xl mx-auto">
+            <motion.div variants={itemVariants} className="font-sans font-light text-base sm:text-lg md:text-2xl lg:text-3xl italic tracking-wide opacity-90 max-w-3xl mx-auto px-2">
               {page.subtitle}
             </motion.div>
           )}
 
           {page.body && (
-            <motion.div variants={itemVariants} className="mt-10 font-sans text-xs md:text-sm tracking-[0.2em] uppercase opacity-80 border-t border-current pt-6 inline-block">
+            <motion.div variants={itemVariants} className="mt-6 sm:mt-8 md:mt-10 font-sans text-[10px] sm:text-xs md:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase opacity-80 border-t border-current pt-4 sm:pt-6 inline-block">
               {page.body}
             </motion.div>
           )}
 
           {page.pull && (
-             <motion.div variants={itemVariants} className="mt-16 md:mt-24 font-serif text-3xl md:text-5xl text-gold italic max-w-4xl leading-tight">
+             <motion.div variants={itemVariants} className="mt-8 sm:mt-12 md:mt-16 lg:mt-24 font-serif text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gold italic max-w-4xl leading-tight px-2">
                {page.pull}
              </motion.div>
           )}
@@ -140,10 +140,10 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
     return (
       <section className={`relative w-full h-full overflow-hidden flex items-center ${bgColor} ${textColor}`}>
         <ContentWrapper isActive={isActive} width="wide">
-          {page.masthead && <motion.div variants={itemVariants} className="text-gold text-xs tracking-[0.3em] uppercase mb-6 border-b border-gold/20 pb-4 inline-block">{page.masthead}</motion.div>}
-          <motion.h2 variants={itemVariants} className="font-serif text-5xl md:text-7xl mb-12 md:mb-16">{page.title}</motion.h2>
+          {page.masthead && <motion.div variants={itemVariants} className="text-gold text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-4 sm:mb-6 border-b border-gold/20 pb-3 sm:pb-4 inline-block">{page.masthead}</motion.div>}
+          <motion.h2 variants={itemVariants} className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-8 sm:mb-12 md:mb-16 break-words">{page.title}</motion.h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 w-full border-t border-current/20 pt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-x-12 md:gap-y-12 w-full border-t border-current/20 pt-8 sm:pt-12">
             {page.grid?.map((item, idx) => {
                const [name, desc] = item.split('—').map(s => s.trim());
                return (
@@ -152,14 +152,14 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
                     variants={itemVariants}
                     className="group"
                  >
-                   <div className="font-serif text-2xl text-gold mb-2 group-hover:text-white transition-colors">{name}</div>
-                   <div className="font-sans text-xs font-medium tracking-widest uppercase opacity-60">{desc || name}</div>
+                   <div className="font-serif text-lg sm:text-xl md:text-2xl text-gold mb-2 group-hover:text-white transition-colors">{name}</div>
+                   <div className="font-sans text-xs sm:text-sm font-medium tracking-widest uppercase opacity-60">{desc || name}</div>
                  </motion.div>
                )
             })}
           </div>
 
-          {page.subtitle && <motion.p variants={itemVariants} className="mt-16 font-sans font-light italic opacity-60 text-center w-full border-t border-current/10 pt-8">{page.subtitle}</motion.p>}
+          {page.subtitle && <motion.p variants={itemVariants} className="mt-12 md:mt-16 font-sans font-light italic opacity-60 text-center w-full border-t border-current/10 pt-6 sm:pt-8 text-sm md:text-base">{page.subtitle}</motion.p>}
         </ContentWrapper>
       </section>
     );
@@ -168,13 +168,13 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
   // 3. PHOTO LAYOUT
   if (page.type === 'layout-photo') {
     return (
-      <section className={`relative w-full h-full flex flex-col justify-end pb-24 md:pb-32 px-8 md:px-16 ${bgColor} ${textColor}`}>
+      <section className={`relative w-full h-full flex flex-col justify-end pb-12 sm:pb-16 md:pb-24 lg:pb-32 px-4 sm:px-6 md:px-16 ${bgColor} ${textColor}`}>
          <Background />
          <ContentWrapper isActive={isActive} className="!justify-end !mx-0 !px-0 max-w-4xl" width="wide">
-            <motion.div variants={itemVariants} className="border-l-4 border-gold pl-8 md:pl-12 bg-black/20 backdrop-blur-md p-8 md:p-12">
-              {page.title && <h2 className="font-serif text-5xl md:text-8xl mb-6 leading-[0.9]">{page.title}</h2>}
-              {page.subtitle && <div className="w-16 h-1 bg-gold mb-6"></div>}
-              {page.subtitle && <p className="font-sans text-sm md:text-lg tracking-[0.2em] uppercase font-medium">{page.subtitle}</p>}
+            <motion.div variants={itemVariants} className="border-l-4 border-gold pl-4 sm:pl-6 md:pl-8 lg:pl-12 bg-black/20 backdrop-blur-md p-4 sm:p-6 md:p-8 lg:p-12">
+              {page.title && <h2 className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-8xl mb-4 sm:mb-5 md:mb-6 leading-tight sm:leading-[0.95] md:leading-[0.9] break-words">{page.title}</h2>}
+              {page.subtitle && <div className="w-12 sm:w-14 md:w-16 h-1 bg-gold mb-4 sm:mb-5 md:mb-6"></div>}
+              {page.subtitle && <p className="font-sans text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase font-medium">{page.subtitle}</p>}
             </motion.div>
          </ContentWrapper>
       </section>
@@ -207,9 +207,9 @@ const PageRenderer: FC<PageRendererProps> = ({ page, isActive }) => {
             )}
           </div>
 
-          {/* TWO COLUMN LAYOUT for VOGUE STYLE */}
-          <motion.div variants={itemVariants} className="md:columns-2 gap-12 lg:gap-20 font-sans font-light text-base md:text-lg leading-loose opacity-90 mx-auto max-w-5xl border-t border-current/20 pt-10">
-            {renderBody(page.body, true)}
+          {/* RESPONSIVE LAYOUT: single column on mobile, two columns on lg+ screens */}
+          <motion.div variants={itemVariants} className="lg:columns-2 gap-8 lg:gap-12 xl:gap-20 font-sans font-light text-sm sm:text-base md:text-lg leading-relaxed sm:leading-loose opacity-90 mx-auto max-w-5xl border-t border-current/20 pt-6 sm:pt-10">
+            {renderBody(page.body, false)}
           </motion.div>
 
           {page.pull && (

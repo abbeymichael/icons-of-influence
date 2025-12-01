@@ -104,8 +104,10 @@ const App: React.FC = () => {
             animate="center"
             exit="exit"
             onAnimationComplete={() => setIsTransitioning(false)}
-            // Use onPan for swipe detection instead of drag="x" to preserve flip mechanics
-            onPanEnd={(e, info) => {
+            drag="x"
+            dragElastic={0.2}
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={(e, info) => {
               const swipeThreshold = 50;
               if (info.offset.x < -swipeThreshold) {
                 nextPage();
