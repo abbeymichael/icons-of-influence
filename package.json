@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://abbeymichael.github.io/icons-of-influence/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
